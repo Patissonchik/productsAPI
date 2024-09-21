@@ -26,7 +26,7 @@ class CategoryRepository implements CategoryRepositoryInterface
             return $category;
         }
 
-        throw new \Exception("Category not found", 404);
+        throw new \Exception("Категория не найдена", 404);
     }
     public function delete($id)
     {
@@ -35,7 +35,7 @@ class CategoryRepository implements CategoryRepositoryInterface
             return $category->delete();
         }
 
-        return null;
+        throw new \Exception("Категория не найдена", 404);
     }
     public function getProducts($category_id)
     {

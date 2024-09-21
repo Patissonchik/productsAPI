@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\CategoryService;
 use App\Http\Requests\CategoryRequest;
+use Exception;
 
 class CategoryController extends Controller
 {
@@ -31,7 +32,7 @@ class CategoryController extends Controller
             $category = $this->categoryService->createCategory($validatedData);
 
             return response()->json($category, 201);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['message' => 'Категория не была создана', 'error' => $e->getMessage()], 400);
         }
     }
@@ -43,10 +44,9 @@ class CategoryController extends Controller
     {
         try {
             $category = $this->categoryService->getCategoryById($id);
-
             return response()->json($category, 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Категория не найдена'], 404);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Категория не найдена', 'error' => $e->getMessage()], 404);
         }
     }
 
@@ -58,9 +58,9 @@ class CategoryController extends Controller
         try {
             $category = $this->categoryService->updateCategory($id, $request->validated());
             return response()->json($category, 201);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($e->getCode() === 404) {
-                return response()->json(['message' => 'Категория не найдена'], 404);
+                return response()->json(['message' => 'Категория не найдена', 'error' => $e->getMessage()], 404);
             }
             return response()->json(['message' => 'Непредвиденная ошибка'], 500);
         }
@@ -71,12 +71,15 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $category = $this->categoryService->deleteCategory($id);
-        if ($category) {
+        try {
+            $this->categoryService->deleteCategory($id);
             return response()->json(['message' => 'Категория удалена'], 204);
+        } catch (Exception $e) {
+            if ($e->getCode() === 404) {
+                return response()->json(['message' => 'Категория не найдена', 'error' => $e->getMessage()], 404);
+            }
+            return response()->json(['message' => 'Непредвиденная ошибка'], 500);
         }
-
-        return response()->json(['message' => 'Категория не найдена'], 404);
     }
 
     public function getProducts($id)
