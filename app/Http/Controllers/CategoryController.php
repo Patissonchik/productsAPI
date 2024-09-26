@@ -6,6 +6,9 @@ use App\Services\CategoryService;
 use App\Http\Requests\CategoryRequest;
 use Exception;
 
+/**
+ * @OA\Tag(name="Categories", description="API для управления категориями")
+ */
 class CategoryController extends Controller
 {
     protected $categoryService;
@@ -17,13 +20,49 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * @OA\Get(
+     *     path="/categories",
+     *     summary="Получить список всех категорий",
+     *     tags={"Categories"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Список категорий",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Category")
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
         return response()->json($this->categoryService->getAllCategories());
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/categories",
+     *     summary="Создать новую категорию",
+     *     tags={"Categories"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Категория успешно создана",
+     *         @OA\JsonContent(ref="#/components/schemas/Category")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Ошибка создания категории",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Категория не была создана"),
+     *             @OA\Property(property="error", type="string", example="Ошибка создания")
+     *         )
+     *     )
+     * )
      */
     public function store(CategoryRequest $request)
     {
@@ -38,7 +77,31 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/categories/{id}",
+     *     summary="Получить категорию по ID",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID категории"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Данные категории",
+     *         @OA\JsonContent(ref="#/components/schemas/Category")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Категория не найдена",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Категория не найдена"),
+     *             @OA\Property(property="error", type="string", example="Ошибка получения категории")
+     *         )
+     *     )
+     * )
      */
     public function show($id)
     {
@@ -51,7 +114,43 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/categories/{id}",
+     *     summary="Обновить категорию по ID",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID категории"
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Категория успешно обновлена",
+     *         @OA\JsonContent(ref="#/components/schemas/Category")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Категория не найдена",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Категория не найдена"),
+     *             @OA\Property(property="error", type="string", example="Ошибка обновления категории")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Непредвиденная ошибка",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Непредвиденная ошибка"),
+     *             @OA\Property(property="error", type="string", example="Ошибка сервера")
+     *         )
+     *     )
+     * )
      */
     public function update(CategoryRequest $request, string $id)
     {
@@ -67,7 +166,38 @@ class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/categories/{id}",
+     *     summary="Удалить категорию по ID",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID категории"
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Категория успешно удалена"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Категория не найдена",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Категория не найдена"),
+     *             @OA\Property(property="error", type="string", example="Ошибка удаления категории")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Непредвиденная ошибка",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Непредвиденная ошибка"),
+     *             @OA\Property(property="error", type="string", example="Ошибка сервера")
+     *         )
+     *     )
+     * )
      */
     public function destroy(string $id)
     {
@@ -82,6 +212,28 @@ class CategoryController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/categories/{id}/products",
+     *     summary="Получить все продукты для категории",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID категории"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Список продуктов",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Product")
+     *         )
+     *     )
+     * )
+     */
     public function getProducts($id)
     {
         return response()->json($this->categoryService->getProductsForCategory($id));

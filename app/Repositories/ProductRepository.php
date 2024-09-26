@@ -54,7 +54,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function filterByPrice($minPrice, $maxPrice, $perPage = 10)
     {
-        return Product::whereBetween('price', $minPrice, $maxPrice)->paginate($perPage);
+        return Product::whereBetween('price', [$minPrice, $maxPrice])->paginate($perPage);
     }
 
     public function sortByPrice($order = 'asc', $perPage = 10)

@@ -4,6 +4,25 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @OA\Schema(
+ *     schema="CategoryRequest",
+ *     type="object",
+ *     title="CategoryRequest",
+ *     description="Запрос на создание/обновление категории",
+ *     required={"name", "description"},
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         description="Название категории"
+ *     ),
+ *     @OA\Property(
+ *         property="description",
+ *         type="string",
+ *         description="Описание категории"
+ *     )
+ * )
+ */
 class CategoryRequest extends FormRequest
 {
     /**
